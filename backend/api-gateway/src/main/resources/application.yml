@@ -1,0 +1,33 @@
+server:
+  port: 8084
+  shutdown: graceful
+
+spring:
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: "http://127.0.0.1:9000"
+      client:
+        registration:
+          api-gateway:
+            provider: spring
+            client-id: api-gateway-client-id
+            client-secret: 12345-client-secret
+            authorization-grant-type: authorization_code
+            redirect-uri: http://127.0.0.1:8084/login/oauth2/code/api-gateway
+            scope: openid,profile,read,write
+            client-name: api-gateway
+        provider:
+          spring:
+            issuer-uri: "http://127.0.0.1:8083"
+  cloud:
+    gateway:
+      routes:
+        - id: user
+          uri:  http://localhost:8082
+          predicates:
+            - Path=/user/**
+  application:
+    name: api-gateway
